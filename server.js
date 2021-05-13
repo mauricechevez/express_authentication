@@ -8,9 +8,6 @@ const SECRET_SESSION = process.env.SECRET_SESSION;
 const passport = require('./config/ppConfig')
 const isLoggedIn = require('./middleware/isLoggedIn')
 
-
-
-
 app.set('view engine', 'ejs');
 
 app.use(require('morgan')('dev'));
