@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const passport = require('../config/ppConfig');
+const db = require('../models')
 
 router.get('/signup', (req, res) => {
   res.render('auth/signup');
@@ -17,5 +18,34 @@ router.post('/login', passport.authenticate('local',{
   successFlash: 'Welcome Back!',
   failureFlash: " Your email or password is incorrect. Please try again."
 }))
+
+router.post('/signup', async(req,res)=>{
+  const {name, email, password} = req.body;
+
+  try{
+    const [user,created] = await db.user.findOrCreate({
+      where: {email},
+      defaults: {name,password}
+    })
+    if (created){
+      console.log(`--------- ${user.name} was created`)
+      const successObject = {
+        successRedirect: '/',
+        successFlash: `Welcome ${user.name}. Account was created`
+      }
+
+      passport.authenticate('local',successObject)(req,res)
+    } else{
+      req.flash('error', 'Email already exists')
+      req.redirect('/auth/signup')
+    }
+  } catch (error){
+    console.log(`------------ ERROR ------------`)
+    console.log(error)
+    //Handle the user experience if something goes wrong
+    req.flash('error','Either email or password is incorrect. Please try again')
+  }
+
+})
 
 module.exports = router;
