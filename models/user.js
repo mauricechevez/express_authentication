@@ -46,5 +46,22 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     modelName: 'user',
   });
+// Hash the password using the bsync library
+user.addHook('beforeCreate', (pendingUser) =>{
+  let hash = bcrypt.hashSync(pendingUser.password, 12)
+  pendingUser = hash // this hashed pw goes to the DB
+})
+user.prototype.validPassword = function(typedPassword){
+  let isCorrectPassword = bcrypt.compareSync(typedPassword, this.password)
+  return isCorrectPassword;
+}
+// return an object from the DB of the user model, without the hashed pw.
+
+user.prototype.toJSON = function(){
+    let userData = this.get()
+    delete userData.password;
+  return userData
+}
+
   return user;
 };
