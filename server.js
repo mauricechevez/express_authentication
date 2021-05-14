@@ -20,22 +20,24 @@ app.use(session ({
   saveUninitialized: true
 }))
 app.use(flash())
+app.use(passport.initialize())
+app.use(passport.session())
 app.use((req, res, next) =>{
   console.log(res.locals)
   res.locals.alerts = req.flash()
   res.locals.currentUser = req.user;
   next()
 })
-app.use(passport.initialize())
-app.use(passport.session())
+
 
 
 app.get('/', (req, res) => {
   res.render('index');
 });
 
-app.get('/profile', (req, res) => {
-  res.render('profile');
+app.get('/profile', isLoggedIn, (req, res) => {
+  const {id, name, email} = req.user.get()
+  res.render('profile', {id, name, email});
 });
 
 app.use('/auth', require('./controllers/auth'));
