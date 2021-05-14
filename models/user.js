@@ -49,7 +49,7 @@ module.exports = (sequelize, DataTypes) => {
 // Hash the password using the bsync library
 user.addHook('beforeCreate', (pendingUser) =>{
   let hash = bcrypt.hashSync(pendingUser.password, 12)
-  pendingUser = hash // this hashed pw goes to the DB
+  pendingUser.password = hash // this hashed pw goes to the DB
 })
 user.prototype.validPassword = function(typedPassword){
   let isCorrectPassword = bcrypt.compareSync(typedPassword, this.password)

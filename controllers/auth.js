@@ -44,8 +44,8 @@ router.post('/signup', async(req,res)=>{
     console.log(error)
     //Handle the user experience if something goes wrong
     req.flash('error','Either email or password is incorrect. Please try again')
+    res.redirect('/auth/signup')
   }
-
 })
 
 router.get('/logout', (req, res) => {
